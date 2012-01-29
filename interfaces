@@ -1,0 +1,62 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+iface eth0 inet manual
+iface wlan1 inet manual
+
+# Internal address is a bridge across eth0 and wlan1
+auto br0
+iface br0 inet static
+	bridge_ports eth0 wlan1
+	address 172.31.24.3
+	netmask 255.255.254.0
+	gateway 172.31.24.1
+
+# Virtual address which is the default route for the subnet
+auto br0:1
+iface br0:1 inet static
+	address 172.31.24.1
+	netmask 255.255.254.0
+
+# External Bethere IP address
+auto eth1
+iface eth1 inet static
+	address 93.97.176.250
+	netmask 255.255.248.0
+	gateway	93.97.176.1
+
+# ADSL modem management subnet
+auto eth1:1
+iface eth1:1 inet static
+	address 192.168.2.10
+	netmask 255.255.255.0
+
+auto eth2
+iface eth2 inet static
+	address 192.168.0.1
+	netmask 255.255.255.0
+
+auto he-6in4
+iface he-6in4 inet6 v4tunnel
+	address 2001:470:1f08:1de::2
+	netmask 64
+	endpoint 216.66.80.26
+	ttl 64
+
+	up   ip -6 route add default dev he-6in4
+	down ip -6 route flush dev he-6in4
+	up   ip -6 addr add 2001:470:92f1::1/128 dev he-6in4
+	down ip -6 addr del 2001:470:92f1::1/128 dev he-6in4
+	up   ip -6 route add 2001:470:92f1::/48 dev lo
+	down ip -6 route del 2001:470:92f1::/48 dev lo
+
+	up   ip -6 addr add 2001:470:92f1::2/64 dev br0
+	down ip -6 addr del 2001:470:92f1::2/64 dev br0
+	up   ip -6 route add 2001:470:92f1:a::/60 via 2001:470:92f1::3 dev br0
+	down ip -6 route del 2001:470:92f1:a::/60 dev br0
+
+
