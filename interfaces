@@ -16,6 +16,9 @@ iface br0 inet static
 	netmask 255.255.254.0
 	gateway 172.31.24.1
 
+	up   ip route add 172.31.25.0/24 via 172.31.24.10 dev br0
+	down ip route flush dev br0
+
 # Virtual address which is the default route for the subnet
 auto br0:1
 iface br0:1 inet static
@@ -23,11 +26,20 @@ iface br0:1 inet static
 	netmask 255.255.254.0
 
 # External Bethere IP address
+#auto eth1
+#iface eth1 inet static
+#	address 93.97.176.250
+#	netmask 255.255.248.0
+#	gateway	93.97.176.1
+#
+#	# Please shout at ms7821 if this breaks anything :)
+#	#up ethtool -s eth1 speed 100 duplex half autoneg off
+#
 auto eth1
-iface eth1 inet static
-	address 93.97.176.250
-	netmask 255.255.248.0
-	gateway	93.97.176.1
+iface eth1 inet dhcp
+#
+#
+#
 
 # ADSL modem management subnet
 auto eth1:1
@@ -54,9 +66,11 @@ iface he-6in4 inet6 v4tunnel
 	up   ip -6 route add 2001:470:92f1::/48 dev lo
 	down ip -6 route del 2001:470:92f1::/48 dev lo
 
-	up   ip -6 addr add 2001:470:92f1::2/64 dev br0
-	down ip -6 addr del 2001:470:92f1::2/64 dev br0
-	up   ip -6 route add 2001:470:92f1:a::/60 via 2001:470:92f1::3 dev br0
-	down ip -6 route del 2001:470:92f1:a::/60 dev br0
+	up   ip -6 addr add 2001:470:92f1::3/64 dev br0
+	down ip -6 addr del 2001:470:92f1::3/64 dev br0
+	up   ip -6 route add 2001:470:92f1:a000::/60 via 2001:470:92f1::a dev br0
+	down ip -6 route del 2001:470:92f1:a000::/60 dev br0
+	#up   ip -6 route add 2001:470:92f1::/60 dev br0
+	#down ip -6 route flush dev br0
 
 
